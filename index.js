@@ -11,30 +11,56 @@ const CHAT_ID = "@otpkemfot";
 function getFlag(data) {
   const str = JSON.stringify(data).toLowerCase();
   const flags = [
-    { flag: "🇧BJ", keys: ["benin", "+229", " bj "] },
-    { flag: "🇲🇱", keys: ["mali", "+223", " ml "] },
-    { flag: "🇹🇬", keys: ["togo", "+228", " tg "] },
-    { flag: "🇿🇼", keys: ["zimbabwe", "+263", " zw "] },
-    { flag: "🇵🇪", keys: ["peru", "+51", " pe "] },
+    // Asia & Asia Tenggara
+    { flag: "🇮🇩", keys: ["indonesia", "+62", " id "] },
+    { flag: "🇲🇾", keys: ["malaysia", "+60", " my "] },
+    { flag: "🇹🇭", keys: ["thailand", "+66", " th "] },
+    { flag: "🇵🇭", keys: ["philippines", "filipina", "+63", " ph "] },
+    { flag: "🇻🇳", keys: ["vietnam", "+84", " vn "] },
+    { flag: "🇸🇬", keys: ["singapore", "singapura", "+65", " sg "] },
+    { flag: "🇲🇲", keys: ["myanmar", "+95", " mm "] },
+    { flag: "🇰🇭", keys: ["cambodia", "kamboja", "+855", " kh "] },
     { flag: "🇱🇰", keys: ["sri lanka", "srilangka", "+94", " lk "] },
-    { flag: "🇸🇩", keys: ["sudan", "+249", " sd "] },
+    { flag: "🇮🇳", keys: ["india", "+91", " in "] },
+    { flag: "🇵🇰", keys: ["pakistan", "+92", " pk "] },
     { flag: "🇦🇫", keys: ["afghanistan", "+93", " af "] },
     { flag: "🇹🇯", keys: ["tajikistan", "+992", " tj "] },
     { flag: "🇦🇿", keys: ["azerbaijan", "+994", " az "] },
-    { flag: "🇮🇩", keys: ["indonesia", "+62", " id "] },
-    { flag: "🇩🇪", keys: ["germany", "jerman", "+49", " de "] },
-    { flag: "🇵🇾", keys: ["paraguay", "+595", " py "] },
-    { flag: "🇵🇰", keys: ["pakistan", "+92", " pk "] },
-    { flag: "🇵🇭", keys: ["philippines", "filipina", "+63", " ph "] },
+    { flag: "🇺🇿", keys: ["uzbekistan", "+998", " uz "] },
+    { flag: "🇰🇿", keys: ["kazakhstan", "+76", "+77", " kz "] },
+
+    // Afrika
+    { flag: "🇧🇯", keys: ["benin", "+229", " bj "] },
+    { flag: "🇲🇱", keys: ["mali", "+223", " ml "] },
+    { flag: "🇹🇬", keys: ["togo", "+228", " tg "] },
+    { flag: "🇿🇼", keys: ["zimbabwe", "+263", " zw "] },
+    { flag: "🇸🇩", keys: ["sudan", "+249", " sd "] },
+    { flag: "🇳🇬", keys: ["nigeria", "+234", " ng "] },
+    { flag: "🇰🇪", keys: ["kenya", "+254", " ke "] },
+    { flag: "🇿🇦", keys: ["south africa", "afrika selatan", "+27", " za "] },
+    { flag: "🇪🇬", keys: ["egypt", "mesir", "+20", " eg "] },
+
+    // Amerika
     { flag: "🇺🇸", keys: ["united states", "usa", "+1", " us "] },
-    { flag: "🇷🇺", keys: ["russia", "rusia", "+7", " ru "] },
-    { flag: "🇬🇧", keys: ["united kingdom", "uk", "+44", " gb "] },
-    { flag: "🇻🇳", keys: ["vietnam", "+84", " vn "] },
+    { flag: "🇨🇦", keys: ["canada", "kanada", "+1", " ca "] },
     { flag: "🇧🇷", keys: ["brazil", "brasil", "+55", " br "] },
-    { flag: "🇮🇳", keys: ["india", "+91", " in "] },
-    { flag: "🇲🇾", keys: ["malaysia", "+60", " my "] },
-    { flag: "🇹🇭", keys: ["thailand", "+66", " th "] },
-    { flag: "🇳🇬", keys: ["nigeria", "+234", " ng "] }
+    { flag: "🇵🇪", keys: ["peru", "+51", " pe "] },
+    { flag: "🇵🇾", keys: ["paraguay", "+595", " py "] },
+    { flag: "🇲🇽", keys: ["mexico", "meksiko", "+52", " mx "] },
+    { flag: "🇦🇷", keys: ["argentina", "+54", " ar "] },
+    { flag: "🇨🇱", keys: ["chile", "+56", " cl "] },
+    { flag: "🇨🇴", keys: ["colombia", "kolombia", "+57", " co "] },
+
+    // Eropa
+    { flag: "🇷🇺", keys: ["russia", "rusia", "+7", " ru "] },
+    { flag: "🇩🇪", keys: ["germany", "jerman", "+49", " de "] },
+    { flag: "🇬🇧", keys: ["united kingdom", "uk", "inggris", "+44", " gb "] },
+    { flag: "🇫🇷", keys: ["france", "prancis", "+33", " fr "] },
+    { flag: "🇳🇱", keys: ["netherlands", "belanda", "+31", " nl "] },
+    { flag: "🇮🇹", keys: ["italy", "italia", "+39", " it "] },
+    { flag: "🇪🇸", keys: ["spain", "spanyol", "+34", " es "] },
+    { flag: "🇺🇦", keys: ["ukraine", "ukraina", "+380", " ua "] },
+    { flag: "🇵🇱", keys: ["poland", "polandia", "+48", " pl "] }
   ];
 
   for (const item of flags) {
@@ -50,9 +76,8 @@ app.post("/webhook", async (req, res) => {
   try {
     const body = req.body || {};
 
-    // Abaikan event assign nomor / event selain SMS
-    if (body.event && body.event !== "sms.received" && body.event !== "message.received" && body.event !== "sms") {
-      // Kalo cuma event add nomor, langsung balas OK tanpa kirim ke Telegram
+    // Filter event: Hanya kirim kalo ada event SMS
+    if (body.event && body.event !== "message.received" && body.event !== "sms.received" && body.event !== "sms") {
       return res.status(200).send("Ignored non-SMS event");
     }
 
@@ -60,13 +85,17 @@ app.post("/webhook", async (req, res) => {
     if (typeof body === "string") {
       rawText = body;
     } else if (typeof body === "object" && body !== null) {
-      rawText = body.message || body.sms || body.text || body.otp || body.code || JSON.stringify(body, null, 2);
+      rawText = body.text || body.message || body.sms || body.otp || body.code || (body.data && body.data.text) || JSON.stringify(body, null, 2);
     } else {
       rawText = String(body);
     }
 
+    // Ekstrak angka OTP 4-8 digit kalau ada
+    const otpMatch = rawText.match(/\b\d{4,8}\b/);
+    const otpCode = otpMatch ? otpMatch[0] : rawText;
+
     const flag = getFlag(body);
-    const formattedText = `<b>${flag} [ KEMFOT OTP RECEIVER ]</b>\n\n<code>${rawText}</code>`;
+    const formattedText = `<b>${flag} [ KEMFOT OTP RECEIVER ]</b>\n\nPesan: <code>${rawText}</code>`;
 
     await axios.post(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
       chat_id: CHAT_ID,
@@ -74,6 +103,11 @@ app.post("/webhook", async (req, res) => {
       parse_mode: "HTML",
       reply_markup: {
         inline_keyboard: [
+          // Baris 1: Tombol OTP (Tampilan Ijo / Tombol Utama)
+          [
+            { text: `📋 OTP: ${otpCode}`, url: "https://t.me/Kemfot" }
+          ],
+          // Baris 2: Tombol Biru Channel & Diskusi
           [
             { text: "📁 File", url: "https://t.me/Kemfot" },
             { text: "💬 Diskusi", url: "https://t.me/kemfotdisc" }
@@ -90,4 +124,3 @@ app.post("/webhook", async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-                        
