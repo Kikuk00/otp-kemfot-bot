@@ -11,7 +11,7 @@ const CHAT_ID = "@otpkemfot";
 function getFlag(data) {
   const str = JSON.stringify(data).toLowerCase();
   const flags = [
-    { flag: "🇧🇯", keys: ["benin", "+229", " bj "] },
+    { flag: "🇧BJ", keys: ["benin", "+229", " bj "] },
     { flag: "🇲🇱", keys: ["mali", "+223", " ml "] },
     { flag: "🇹🇬", keys: ["togo", "+228", " tg "] },
     { flag: "🇿🇼", keys: ["zimbabwe", "+263", " zw "] },
@@ -43,14 +43,19 @@ function getFlag(data) {
   return "🌐";
 }
 
-// Handler GET biar AuGestel & Browser kaga Error 405 lagi
 app.get("/", (req, res) => res.status(200).send("Bot Server Active"));
 app.get("/webhook", (req, res) => res.status(200).send("Webhook Ready"));
 
-// Handler POST buat nangkep OTP dari AuGestel
 app.post("/webhook", async (req, res) => {
   try {
     const body = req.body || {};
+
+    // Abaikan event assign nomor / event selain SMS
+    if (body.event && body.event !== "sms.received" && body.event !== "message.received" && body.event !== "sms") {
+      // Kalo cuma event add nomor, langsung balas OK tanpa kirim ke Telegram
+      return res.status(200).send("Ignored non-SMS event");
+    }
+
     let rawText = "";
     if (typeof body === "string") {
       rawText = body;
@@ -85,3 +90,4 @@ app.post("/webhook", async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+                        
