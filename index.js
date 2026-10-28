@@ -43,6 +43,11 @@ function getFlag(data) {
   return "🌐";
 }
 
+// Handler GET biar AuGestel & Browser kaga Error 405 lagi
+app.get("/", (req, res) => res.status(200).send("Bot Server Active"));
+app.get("/webhook", (req, res) => res.status(200).send("Webhook Ready"));
+
+// Handler POST buat nangkep OTP dari AuGestel
 app.post("/webhook", async (req, res) => {
   try {
     const body = req.body || {};
